@@ -1,2 +1,7 @@
 .idea
 node_modules
+eng.traineddata
+
+utils/*.txt
+/*.png
+/*.txt

@@ -6,8 +6,16 @@
  * https://www.electronjs.org/docs/latest/tutorial/sandbox
  */
 const { contextBridge, ipcRenderer } = require('electron');
+const fs = require('fs');
+const path = require('path');
+const { Buffer } = require('buffer');
 
 contextBridge.exposeInMainWorld('electronApi', {
+	on: (channel, callback) => ipcRenderer.on(channel, (event, ...args) => callback(...args)),
+    send: (channel, data) => ipcRenderer.send(channel, data),
+	fs: fs,
+    path: path,
+	createBuffer: (base64) => Buffer.from(base64, 'base64'), 
 	main: {
 		isOSX: () => process.platform === 'darwin',
 		isWindows: () => process.platform === 'win32',

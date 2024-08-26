@@ -1,7 +1,7 @@
 {
-  "name": "edc",
+  "name": "gsc-electron",
   "version": "1.0.0",
-  "description": "A minimal Desktop capturing Electron application",
+  "description": "A minimal Screenshot capturing for PC games",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
@@ -18,6 +18,10 @@
     "electron": "^25.0.1"
   },
   "dependencies": {
-    "electron-util": "^0.17.2"
+    "@techstark/opencv-js": "^4.10.0-beta.1",
+    "electron-util": "^0.17.2",
+    "jimp": "^0.22.12",
+    "tesseract.js": "^5.1.0",
+    "uiohook-napi": "^1.5.4"
   }
 }
