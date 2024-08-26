@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, ipcMain, screen } = require('electron');
+const { app, BrowserWindow, ipcMain, screen, systemPreferences, desktopCapturer } = require('electron');
 const util = require("electron-util");
 const path = require('path');
 const IS_OSX = process.platform === 'darwin';
@@ -50,6 +50,7 @@ function createOverlayWindow() {
 
     // Position it at the top right of the screen
     const overlayX = 980;
+    
     const overlayY = 0;
 
     overlayWindow = new BrowserWindow({

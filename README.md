@@ -5,7 +5,7 @@ This is an Electron application that creates two separate windows: a main applic
 ## Features
 
 - **Main Window**: A standard Electron browser window that can be used for your primary application interface.
-- **Overlay Window**: A small, transparent, frameless window that is always on top. It can be moved independently and is positioned at the top right of the screen.
+- **Overlay Window**: A small, transparent, frameless window that is always on top. It can be moved independently and is positioned at the top right of the screen. Overlay can be included in screenshot by selecting screen 1
 - **Keyboard Events**: Listens for key events using the `uiohook-napi` library, triggering actions like screenshots or creating a match when specific keys are held down.
 
 
