@@ -40,9 +40,6 @@ recordDrawBtn.addEventListener("click", recordDraw, false);
 
 
 async function startMatch() {
-	// Generate a new match GUID
-	const matchGUID = window.electronApi.matchStats.generateMatchGUID();
-	console.log(`New match started with GUID: ${matchGUID}`);
 
 	//quick and dirty way to start
     const epochTime = Date.now();
@@ -85,8 +82,6 @@ async function recordDraw() {
     console.log(`Draw recorded. Total Draws: ${window.electronApi.matchStats.getDraws()}`);
 	await createMatchFolder(globalFolderPath);
 }
-
-
 
 async function resetStats() {
     window.electronApi.matchStats.setWins(0);
@@ -138,9 +133,11 @@ async function createFolder(targetPath) {
 }
 
 async function createMatchFolder(targetPath) {
-  const localPath = path.join(targetPath, getNextPaddedMatchNumber());
-  globalMatchFolderPath = localPath;
-  createFolder(localPath);
+	const matchGUID = window.electronApi.matchStats.generateMatchGUID();
+	console.log(`New match started with GUID: ${matchGUID}`);
+	const localPath = path.join(targetPath, getNextPaddedMatchNumber());
+	globalMatchFolderPath = localPath;
+	createFolder(localPath);
 }
 
 on('trigger-screenshot', async () => {
