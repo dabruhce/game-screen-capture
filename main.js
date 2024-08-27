@@ -9,6 +9,9 @@ const fs = require('fs');
 let mainWindow = null;
 let overlayWindow = null;
 
+const preloadPath = path.join(__dirname, 'preload.js');
+console.log(`Preload script path: ${preloadPath}`);
+
 function createWindow() {
     // Get the primary display's size
     const primaryDisplay = screen.getPrimaryDisplay();
@@ -26,9 +29,11 @@ function createWindow() {
         y: 0,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
-            devTools: true,
+  //          devTools: true,
             sandbox: false,
-            contextIsolation: true
+            contextIsolation: true,
+            enableRemoteModule: false,
+            nodeIntegration: false,
         }
     });
     mainWindow.webContents.setFrameRate(1);
@@ -37,7 +42,7 @@ function createWindow() {
     mainWindow.loadFile('index.html');
 
     // Open the DevTools.
-    mainWindow.webContents.openDevTools();
+   // mainWindow.webContents.openDevTools();
 
     // Create the overlay window.
     createOverlayWindow();
@@ -45,11 +50,11 @@ function createWindow() {
 
 function createOverlayWindow() {
     // Set the overlay window size to 200x200
-    const overlayWidth = 500;
+    const overlayWidth = 800;
     const overlayHeight = 50;
 
     // Position it at the top right of the screen
-    const overlayX = 980;
+    const overlayX = 1200;
     
     const overlayY = 0;
 
@@ -64,7 +69,12 @@ function createOverlayWindow() {
         resizable: false,
         skipTaskbar: true,
         webPreferences: {
-            nodeIntegration: true, // You can enable node integration if needed
+            preload: path.join(__dirname, 'preload.js'),
+  //          devTools: true,
+            sandbox: false,
+            contextIsolation: true,
+            enableRemoteModule: false,
+            nodeIntegration: false,
         }
     });
 
@@ -74,9 +84,14 @@ function createOverlayWindow() {
     // Make the overlay window click-through.
     overlayWindow.setIgnoreMouseEvents(false); // Set to false if you want it to be interactive
 
+    // Open DevTools for the overlay window
+   // overlayWindow.webContents.openDevTools({ mode: 'detach' });
+
     overlayWindow.on('closed', function () {
         overlayWindow = null;
     });
+
+        return overlayWindow;
 }
 
 app.whenReady().then(() => {
@@ -124,6 +139,7 @@ function initializeKeyListeners(mainWindow) {
                 console.log("Tab held for 500ms - Screenshot triggered");
             }, 300);
         }
+        /*
         if (e.keycode === UiohookKey.Backspace && !backspaceDown) {
             backspaceDown = true;
             keyHoldTimeout = setTimeout(() => {
@@ -131,6 +147,7 @@ function initializeKeyListeners(mainWindow) {
                 console.log("backspace held for 500ms - New match triggered");
             }, 300);
         }
+        */
     });
 
     uIOhook.on('keyup', (e) => {
@@ -143,6 +160,7 @@ function initializeKeyListeners(mainWindow) {
             }
             console.log("Tab up");
         }
+        /*
         if (e.keycode === UiohookKey.Backspace && backspaceDown) {
             backspaceDown = false;
             if (keyHoldTimeout) {
@@ -151,6 +169,7 @@ function initializeKeyListeners(mainWindow) {
                 console.log("backspace released before 500ms - BACKSPACE canceled");
             }
         }
+            */
     });
 
     uIOhook.start();

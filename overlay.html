@@ -1,23 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-    }
-    #overlayContent {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: white;
-      font-size: 24px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overlay</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        #overlayContent {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            white-space: nowrap;
+        }
+        #stats {
+            display: inline-block;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            white-space: nowrap; /* Prevents wrapping to a new line */
+        }
+    </style>
 </head>
 <body>
-  <div id="overlayContent">Overlay data</div>
+    <div id="overlayContent">
+        <div id="stats">
+            <span id="matchId">ID: N/A</span> 
+            <span id="wins">W: 0</span>
+            <span id="losses">L: 0</span>
+            <span id="draws">D: 0</span>
+        </div>
+    </div>
+
+    <script>
+        // Access the matchStats data from the exposed API
+        const winsElement = document.getElementById('wins');
+        const lossesElement = document.getElementById('losses');
+        const drawsElement = document.getElementById('draws');
+        const matchIdElement = document.getElementById('matchId');
+
+        function updateStats() {
+            console.log('Updating stats');
+            console.log(window);
+            winsElement.textContent = `W: ${window.electronApi.matchStats.getWins()}`;
+            lossesElement.textContent = `L: ${window.electronApi.matchStats.getLosses()}`;
+            drawsElement.textContent = `D: ${window.electronApi.matchStats.getDraws()}`;
+            matchIdElement.textContent = `ID: ${window.electronApi.matchStats.getMatchGUID()}`;
+        }
+
+        // Initial update
+        updateStats();
+
+        // Optionally, set up a timer to periodically update the stats
+        setInterval(updateStats, 6000); // Update every second
+    </script>
 </body>
 </html>

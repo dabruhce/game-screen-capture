@@ -34,9 +34,17 @@ stopBtn.addEventListener("click", stopCapture, false);
 openSettingsBtn.addEventListener("click", openPreferences, false);
 matchstartBtn.addEventListener("click", startMatch, false);
 
+recordWinBtn.addEventListener("click", recordWin, false);
+recordLossBtn.addEventListener("click", recordLoss, false);
+recordDrawBtn.addEventListener("click", recordDraw, false);
+
+
 async function startMatch() {
+	// Generate a new match GUID
+	const matchGUID = window.electronApi.matchStats.generateMatchGUID();
+	console.log(`New match started with GUID: ${matchGUID}`);
+
 	//quick and dirty way to start
-	console.log("Match Start");
     const epochTime = Date.now();
     const targetDateFolderPath = path.join(globalFolderBase, `${getFormattedDate()}_${epochTime}`);
     await createFolder(targetDateFolderPath);
@@ -44,34 +52,47 @@ async function startMatch() {
     createMatchFolder(targetDateFolderPath);
 	//takeScreenshot();
 }
-const matchStats = {
+
+let matchStats = {
     wins: 0,
     losses: 0,
     draws: 0,
 };
 
-function recordWin() {
-    let wins = parseInt(localStorage.getItem('wins')) || 0;
-    wins += 1;
-    localStorage.setItem('wins', wins);
-    createMatchFolder(targetPath);
-    console.log(`Win recorded. Total Wins: ${wins}`);
+// Access the match stats from the exposed API
+const wins = window.electronApi.matchStats.getWins();
+const losses = window.electronApi.matchStats.getLosses();
+const draws = window.electronApi.matchStats.getDraws();
+const resetStatsBtn = document.querySelector('#resetStats');
+resetStatsBtn.addEventListener("click", resetStats, false);
+
+console.log(wins, losses, draws);
+
+async function recordWin() {
+    window.electronApi.matchStats.incrementWins();
+    console.log(`Win recorded. Total Wins: ${window.electronApi.matchStats.getWins()}`);
+	await createMatchFolder(globalFolderPath);
 }
 
-function recordLoss() {
-    let losses = parseInt(localStorage.getItem('losses')) || 0;
-    losses += 1;
-    localStorage.setItem('losses', losses);
-    createMatchFolder(targetPath);
-    console.log(`Loss recorded. Total Losses: ${losses}`);
+async function recordLoss() {
+    window.electronApi.matchStats.incrementLosses();
+    console.log(`Loss recorded. Total Losses: ${window.electronApi.matchStats.getLosses()}`);
+	await createMatchFolder(globalFolderPath);
 }
 
 async function recordDraw() {
-	let draws = parseInt(localStorage.getItem('draws')) || 0;
-    draws += 1;
-    localStorage.setItem('draws', draws);
-    createMatchFolder(targetPath);
-    console.log(`Draw recorded. Total Draws: ${draws}`);    
+    window.electronApi.matchStats.incrementDraws();
+    console.log(`Draw recorded. Total Draws: ${window.electronApi.matchStats.getDraws()}`);
+	await createMatchFolder(globalFolderPath);
+}
+
+
+
+async function resetStats() {
+    window.electronApi.matchStats.setWins(0);
+    window.electronApi.matchStats.setLosses(0);
+    window.electronApi.matchStats.setDraws(0);
+    console.log("Match stats reset. Wins, Losses, and Draws are now 0.");
 }
 
 let globalMatchCounter = 1; // Global counter to keep track of the current match number
