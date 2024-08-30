@@ -53,7 +53,7 @@
             winsElement.textContent = `W: ${window.electronApi.matchStats.getWins()}`;
             lossesElement.textContent = `L: ${window.electronApi.matchStats.getLosses()}`;
             drawsElement.textContent = `D: ${window.electronApi.matchStats.getDraws()}`;
-            matchIdElement.textContent = `ID: ${window.electronApi.matchStats.getMatchGUID()}`;
+            matchIdElement.textContent = `ID: ${window.electronApi.matchStats.getStartTime()}`;
         }
 
         // Initial update

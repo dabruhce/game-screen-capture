@@ -13,8 +13,8 @@ This is an Electron application that creates two separate windows: a main applic
 
 1. **Clone the Repository:**
     ```bash
-    git clone https://github.com/yourusername/your-repo.git
-    cd your-repo
+    git clone https://github.com/dabruhce/game-screen-capture.git
+    cd game-screen-capture
     ```
 
 2. **Install Dependencies:**
@@ -60,5 +60,5 @@ Contributions are welcome! Please feel free to submit a Pull Request or open an 
 
 ## Acknowledgements
 
-- Thanks to the creators of [Electron](https://www.electronjs.org/) and [uiohook-napi](https://www.npmjs.com/package/uiohook-napi) for making this project possible.
+- Thanks to the creators of [Electron](https://www.electronjs.org/) and [uiohook-napi](https://www.npmjs.com/package/uiohook-napi) for making this project possible. Forked from JohnJunior/electron-desktop-capturing.
 

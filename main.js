@@ -29,7 +29,7 @@ function createWindow() {
         y: 0,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
-  //          devTools: true,
+            devTools: true,
             sandbox: false,
             contextIsolation: true,
             enableRemoteModule: false,
@@ -42,7 +42,7 @@ function createWindow() {
     mainWindow.loadFile('index.html');
 
     // Open the DevTools.
-   // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
     // Create the overlay window.
     createOverlayWindow();
@@ -70,7 +70,7 @@ function createOverlayWindow() {
         skipTaskbar: true,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
-  //          devTools: true,
+            devTools: true,
             sandbox: false,
             contextIsolation: true,
             enableRemoteModule: false,
@@ -85,7 +85,7 @@ function createOverlayWindow() {
     overlayWindow.setIgnoreMouseEvents(false); // Set to false if you want it to be interactive
 
     // Open DevTools for the overlay window
-   // overlayWindow.webContents.openDevTools({ mode: 'detach' });
+    overlayWindow.webContents.openDevTools({ mode: 'detach' });
 
     overlayWindow.on('closed', function () {
         overlayWindow = null;

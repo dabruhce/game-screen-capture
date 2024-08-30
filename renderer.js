@@ -5,7 +5,7 @@
  * `contextIsolation` is turned on. Use the contextBridge API in `preload.js`
  * to expose Node.js functionality from the main process.
  */
-const { fs, path, createBuffer, on, send, main } = window.electronApi;
+const { fs, path, createBuffer, on, send, main, openDirectory } = window.electronApi;
 const video = document.querySelector('#stream');
 const startBtn = document.querySelector('#start');
 const stopBtn = document.querySelector('#stop');
@@ -18,6 +18,12 @@ const recordWinBtn = document.querySelector('#recordWin');
 const recordLossBtn = document.querySelector('#recordLoss');
 const recordDrawBtn = document.querySelector('#recordDraw');
 
+// Access the match stats from the exposed API
+const wins = window.electronApi.matchStats.getWins();
+const losses = window.electronApi.matchStats.getLosses();
+const draws = window.electronApi.matchStats.getDraws();
+const resetStatsBtn = document.querySelector('#resetStats');
+const openDirectoryBtn = document.getElementById('open-directory-btn');
 
 const displayMediaOptions = {
 	video: {
@@ -32,38 +38,41 @@ navigator.mediaDevices.getDisplayMedia = getDisplayMedia;
 startBtn.addEventListener("click", startCapture, false);
 stopBtn.addEventListener("click", stopCapture, false);
 openSettingsBtn.addEventListener("click", openPreferences, false);
-matchstartBtn.addEventListener("click", startMatch, false);
+//matchstartBtn.addEventListener("click", startMatch, false);
 
 recordWinBtn.addEventListener("click", recordWin, false);
 recordLossBtn.addEventListener("click", recordLoss, false);
 recordDrawBtn.addEventListener("click", recordDraw, false);
-
+openDirectoryBtn.addEventListener("click", openDirectoryInExplorer, false);
+resetStatsBtn.addEventListener("click", resetStats, false);
 
 async function startMatch() {
 
-	//quick and dirty way to start
-    const epochTime = Date.now();
-    const targetDateFolderPath = path.join(globalFolderBase, `${getFormattedDate()}_${epochTime}`);
-    await createFolder(targetDateFolderPath);
-    globalFolderPath = targetDateFolderPath;
-    createMatchFolder(targetDateFolderPath);
-	//takeScreenshot();
+	const dateFolder = window.electronApi.matchStats.generateAndSetFormattedDate();
+	const targetFolderPath = path.join(globalFolderBase, `${dateFolder}`);
+    await createFolder(targetFolderPath);
+    globalFolderPath = targetFolderPath;
+    createMatchFolder(targetFolderPath);
+
 }
 
-let matchStats = {
-    wins: 0,
-    losses: 0,
-    draws: 0,
-};
 
-// Access the match stats from the exposed API
-const wins = window.electronApi.matchStats.getWins();
-const losses = window.electronApi.matchStats.getLosses();
-const draws = window.electronApi.matchStats.getDraws();
-const resetStatsBtn = document.querySelector('#resetStats');
-resetStatsBtn.addEventListener("click", resetStats, false);
+async function openDirectoryInExplorer() {
+    // Define the directory path you want to open
+    const directoryPath = window.electronApi.getCurrentGamePath(); // Replace with your desired directory path
 
-console.log(wins, losses, draws);
+    // Check if the openDirectory function is available on electronApi
+    if (window.electronApi && typeof window.electronApi.openDirectory === 'function') {
+        // Use the exposed function from electronApi to open the directory
+        window.electronApi.openDirectory(directoryPath);
+        console.log(`Opened Directory: ${directoryPath}`);
+    } else {
+        console.error('openDirectory function is not available on window.electronApi');
+    }
+
+    // Additional logic can be added here if needed
+    // await someOtherFunction();
+}
 
 async function recordWin() {
     window.electronApi.matchStats.incrementWins();
@@ -109,11 +118,11 @@ function getNextPaddedPictureNumber(length = 4) {
     return paddedPictureNumber;
 }
 
-const globalFolderBase = path.join('C:', 'Users', 'bruce', 'Pictures', 'Screenshots');
+const globalFolderBase = window.electronApi.pathJoin(window.electronApi.cwd(), 'screenshots');
 let globalFolderPath = '';
 let selectedWindowName = ''; // Global variable to store the selected window name
-let globalMatchFolderPath = ''
-let globalMatchId = 'inital'; // Global variable to store the match ID
+//let globalMatchFolderPath = ''
+//let globalMatchId = 'inital'; // Global variable to store the match ID
 
 function getFormattedDate() {
     const date = new Date();
@@ -133,11 +142,20 @@ async function createFolder(targetPath) {
 }
 
 async function createMatchFolder(targetPath) {
-	const matchGUID = window.electronApi.matchStats.generateMatchGUID();
-	console.log(`New match started with GUID: ${matchGUID}`);
-	const localPath = path.join(targetPath, getNextPaddedMatchNumber());
-	globalMatchFolderPath = localPath;
-	createFolder(localPath);
+	//reset padded picture number for screenshots
+	window.electronApi.matchStats.generateAndSetEndTime();
+	window.electronApi.matchStats.setPaddedPictureNumber(0);
+
+	//TODO generate match stats
+
+	const matchStartTime = window.electronApi.matchStats.generateAndSetStartTime();
+	const matchWindowName = window.electronApi.getWindowName();
+	const localPath = path.join(targetPath, `${matchWindowName}_${matchStartTime}`);
+
+	window.electronApi.setCurrentGamePath(localPath)
+	
+	//globalMatchFolderPath = localPath;
+	createFolder(window.electronApi.getCurrentGamePath());
 }
 
 on('trigger-screenshot', async () => {
@@ -145,6 +163,7 @@ on('trigger-screenshot', async () => {
     await takeScreenshot();
 });
 
+//TODO deprecate
 on('trigger-create-match', async () => {
     console.log("Received request to create a match folder");
     await createMatchFolder(globalFolderPath);
@@ -176,7 +195,10 @@ async function takeScreenshot() {
 }
 
 async function saveImageToFile(dataUrl) {
-    const screenshotCounter = getNextPaddedPictureNumber();
+
+    console.log("Saving image to file...");
+	const screenshotCounter = window.electronApi.matchStats.getNextPaddedPictureNumber();
+	console.log("Saving image to file..." + screenshotCounter);
     const filename = `screenshot-${screenshotCounter}.png`;
 
     // Convert Data URL to Buffer
@@ -185,7 +207,7 @@ async function saveImageToFile(dataUrl) {
    const imgBuffer = createBuffer(base64Data);  // Use the exposed function to create Buffer
 
     // Adjust the path as needed
-    const savePath = path.join(globalMatchFolderPath, filename);
+    const savePath = path.join(window.electronApi.getCurrentGamePath(), filename);
 
     try {
         // Save the Buffer to a file
@@ -294,6 +316,9 @@ function screenPickerShow(sources, onselect) {
 		item.onclick = () => {
             selectedWindowName = source.name.split(' ')[0];
             console.log(`Selected window: ${selectedWindowName}`); // Log the selected window name for verification
+			// Call startMatch function after a screen is selected
+			window.electronApi.setWindowName(selectedWindowName);
+			startMatch();
 			onselect(source.id);
 			MicroModal.close('electron-screen-picker');
 		};
