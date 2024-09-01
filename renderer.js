@@ -219,16 +219,24 @@ async function saveImageToFile(dataUrl) {
 }
 
 async function startCapture() {
-	console.log("capturing");
-	try {
-		video.srcObject = await navigator.mediaDevices.getDisplayMedia(
-			displayMediaOptions
-		);
-		startBtn.classList = 'hidden';
-		stopBtn.classList = '';
-	} catch (err) {
-		console.error(err);
-	}
+    console.log("capturing");
+    try {
+        const stream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
+        video.srcObject = stream;
+
+        // Get the video track from the stream
+        const videoTrack = stream.getVideoTracks()[0];
+
+        // Get the settings of the video track to determine the width and height
+        const { width, height } = videoTrack.getSettings();
+        console.log(`Selected screen dimensions: ${width}x${height}`);
+
+        // Hide the start button and show the stop button
+        startBtn.classList = 'hidden';
+        stopBtn.classList = '';
+    } catch (err) {
+        console.error(err);
+    }
 }
 
 function stopCapture(evt) {
