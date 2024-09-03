@@ -8,17 +8,22 @@
         body {
             margin: 0;
             overflow: hidden;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0); /* More transparent background */
             color: white;
             font-family: Arial, sans-serif;
         }
         #overlayContent {
-            position: absolute;
+            position: fixed; 
             top: 50%;
             left: 50%;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
             transform: translate(-50%, -50%);
             text-align: center;
             white-space: nowrap;
+            background: rgba(0, 0, 0, 0); /* Transparent background for the overlay content */
+            padding: 10px; /* Add some padding to make content readable */
+            border-radius: 8px; /* Rounded corners */
         }
         #stats {
             display: inline-block;
