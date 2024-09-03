@@ -46,6 +46,37 @@ recordDrawBtn.addEventListener("click", recordDraw, false);
 openDirectoryBtn.addEventListener("click", openDirectoryInExplorer, false);
 resetStatsBtn.addEventListener("click", resetStats, false);
 
+document.getElementById('resizeOverlayBtn').addEventListener('click', () => {
+    const newWidth = parseInt(document.getElementById('newWidth').value, 10);
+    const newHeight = parseInt(document.getElementById('newHeight').value, 10);
+
+    // Check if the width and height are valid numbers
+    if (!isNaN(newWidth) && !isNaN(newHeight)) {
+        // Send a message to the main process to update the overlay size
+        window.electronApi.invoke('electronMain:updateOverlaySize', newWidth, newHeight)
+            .then(() => console.log(`Overlay size update requested: ${newWidth}x${newHeight}`))
+            .catch(err => console.error('Failed to update overlay size:', err));
+    } else {
+        console.error('Invalid width or height');
+    }
+});
+
+document.getElementById('moveOverlayBtn').addEventListener('click', () => {
+    const newX = parseInt(document.getElementById('newX').value, 10);
+    const newY = parseInt(document.getElementById('newY').value, 10);
+
+    if (!isNaN(newX) && !isNaN(newY)) {
+        window.electronApi.updateOverlayPosition(newX, newY)
+            .then(() => console.log(`Overlay position update requested: X=${newX}, Y=${newY}`))
+            .catch(err => console.error('Failed to update overlay position:', err));
+    } else {
+        console.error('Invalid X or Y position');
+    }
+});
+
+
+
+
 async function startMatch() {
 
 	const dateFolder = window.electronApi.matchStats.generateAndSetFormattedDate();

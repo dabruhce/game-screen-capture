@@ -55,7 +55,6 @@ function createOverlayWindow() {
 
     // Position it at the top right of the screen
     const overlayX = 1200;
-    
     const overlayY = 0;
 
     overlayWindow = new BrowserWindow({
@@ -123,6 +122,19 @@ ipcMain.handle('electronMain:screen:getSources', () => {
             return source;
         });
     });
+});
+ipcMain.handle('electronMain:updateOverlaySize', (event, newWidth, newHeight) => {
+    if (overlayWindow) {
+        overlayWindow.setSize(newWidth, newHeight);
+        console.log(`Overlay size updated to: ${newWidth}x${newHeight}`);
+    }
+});
+
+ipcMain.handle('electronMain:updateOverlayPosition', (event, newX, newY) => {
+    if (overlayWindow) {
+        overlayWindow.setPosition(newX, newY);
+        console.log(`Overlay position updated to: X=${newX}, Y=${newY}`);
+    }
 });
 
 // Initialize key listeners as in your original code

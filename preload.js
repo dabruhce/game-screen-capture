@@ -12,6 +12,8 @@ contextBridge.exposeInMainWorld('electronApi', {
     createBuffer: (base64) => Buffer.from(base64, 'base64'),
     cwd: () => process.cwd(),
     pathJoin: (...args) => path.join(...args),
+    invoke: (channel, ...args) => ipcRenderer.invoke(channel, ...args), 
+    updateOverlayPosition: (newX, newY) => ipcRenderer.invoke('electronMain:updateOverlayPosition', newX, newY),
     main: {
         isOSX: () => process.platform === 'darwin',
         isWindows: () => process.platform === 'win32',
