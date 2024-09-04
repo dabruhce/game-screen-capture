@@ -14,6 +14,7 @@ contextBridge.exposeInMainWorld('electronApi', {
     pathJoin: (...args) => path.join(...args),
     invoke: (channel, ...args) => ipcRenderer.invoke(channel, ...args), 
     updateOverlayPosition: (newX, newY) => ipcRenderer.invoke('electronMain:updateOverlayPosition', newX, newY),
+    getConfig: () => ipcRenderer.invoke('get-config'),
     main: {
         isOSX: () => process.platform === 'darwin',
         isWindows: () => process.platform === 'win32',

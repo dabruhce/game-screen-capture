@@ -12,6 +12,25 @@ let overlayWindow = null;
 const preloadPath = path.join(__dirname, 'preload.js');
 console.log(`Preload script path: ${preloadPath}`);
 
+let config;
+
+function readConfig() {
+    const configPath = path.join(app.getPath('userData'), 'config.json');
+    try {
+        if (fs.existsSync(configPath)) {
+            const content = fs.readFileSync(configPath, 'utf-8');
+            config = JSON.parse(content);
+            console.log('Configuration loaded:', config);
+        } else {
+            console.log('No configuration file found, loading defaults.');
+            config = { overlay: { width: 800, height: 600, x: 100, y: 100 } }; // Default config
+        }
+    } catch (error) {
+        console.error('Error reading config file:', error);
+        config = { overlay: { width: 800, height: 600, x: 100, y: 100 } }; // Fallback default
+    }
+}
+
 function createWindow() {
     // Get the primary display's size
     const primaryDisplay = screen.getPrimaryDisplay();
@@ -135,6 +154,10 @@ ipcMain.handle('electronMain:updateOverlayPosition', (event, newX, newY) => {
         overlayWindow.setPosition(newX, newY);
         console.log(`Overlay position updated to: X=${newX}, Y=${newY}`);
     }
+});
+
+ipcMain.handle('get-config', () => {
+    return config;
 });
 
 // Initialize key listeners as in your original code
