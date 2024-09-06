@@ -151,11 +151,13 @@ ipcMain.handle('electronMain:updateOverlaySize', (event, newWidth, newHeight) =>
 
 ipcMain.handle('electronMain:updateOverlayPosition', (event, newX, newY) => {
     if (overlayWindow) {
+        //TODO fix
         overlayWindow.setPosition(newX, newY);
         console.log(`Overlay position updated to: X=${newX}, Y=${newY}`);
     }
 });
 
+//TODO: broken?
 ipcMain.handle('get-config', () => {
     return config;
 });

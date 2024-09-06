@@ -75,10 +75,10 @@ document.getElementById('moveOverlayBtn').addEventListener('click', () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    window.electronApi.getConfig().then((config) => {
-        console.log('Loaded config:', config);
+ //   window.electronApi.getConfig().then((config) => {
+ //       console.log('Loaded config:', config);
 
-    });
+ //   });
 });
 
 
