@@ -100,7 +100,7 @@ function createOverlayWindow() {
     overlayWindow.loadFile('overlay.html');
 
     // Make the overlay window click-through.
-    overlayWindow.setIgnoreMouseEvents(false); // Set to false if you want it to be interactive
+    overlayWindow.setIgnoreMouseEvents(true, { forward: true });
 
     // Open DevTools for the overlay window
     overlayWindow.webContents.openDevTools({ mode: 'detach' });

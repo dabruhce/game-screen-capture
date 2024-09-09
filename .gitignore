@@ -1,6 +1,7 @@
 .idea
 node_modules
 eng.traineddata
+run.bat
 
 utils/*.txt
 /*.png
